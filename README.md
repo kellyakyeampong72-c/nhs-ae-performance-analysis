@@ -8,116 +8,102 @@ The project explores A&E demand, four-hour performance, emergency admissions and
 
 ![NHS A&E Performance Dashboard](NHS%20A%26E%20Performance%20Dashboard%20.png)
 
-## Project Objectives
+## Project Approach
 
-The analysis aimed to investigate:
+I wanted this project to go beyond simply creating a dashboard. My main aim was to understand what the NHS A&E data was actually showing and make the results easier to interpret at provider level.
 
-- How NHS providers performed against the four-hour A&E standard
-- Which major Type 1 A&E providers had the lowest four-hour performance
-- Which providers experienced the highest rates of 12+ hour decision-to-admit delays
-- Whether higher Type 1 A&E demand was associated with poorer four-hour performance
-- How provider-level performance could be communicated through an interactive Tableau dashboard
+The key questions I wanted to answer were:
 
-## Tools Used
+- Which Type 1 A&E providers were performing worst against the four hour standard?
+- Which providers were experiencing the highest levels of 12+ hour decision to admit delays?
+- Does a higher number of A&E attendances appear to result in worse four hour performance?
+- How can these findings be presented in a way that someone working with healthcare data could understand quickly?
 
-- Python
-- Pandas
-- NumPy
-- Matplotlib
-- Google Colab
-- Tableau
-- GitHub
+The intended audience for the dashboard is someone such as a healthcare analyst, operational manager or NHS decision maker who wants a quick overview of provider performance without having to work through the raw NHS dataset.
 
-## Data Preparation
+## Understanding the Data
 
-The original NHS England provider-level dataset contained 192 rows and 22 columns.
+Before carrying out the analysis, I explored the structure of the NHS England dataset to understand the different types of A&E activity being reported.
 
-The cleaning and preparation process included:
+One thing that became important during the project was distinguishing between Type 1 A&E departments and other types of emergency care services. Type 1 departments represent major consultant led A&E services, so I decided to use these when comparing provider performance.
 
-- Inspecting column names, data types and missing values
-- Identifying and removing the national `Total` summary row from provider-level comparisons
-- Checking for duplicate organisation codes
-- Calculating total A&E attendances across department types and booked appointments
-- Calculating attendances completed within and over four hours
-- Creating overall and Type 1 four-hour performance measures
-- Calculating total emergency admissions
-- Combining decision-to-admit delay categories
-- Creating a derived 12+ hour DTA delay rate
-- Filtering providers with no relevant A&E activity from specific comparisons
+This made the comparison more meaningful because I was comparing similar types of emergency departments rather than combining organisations that provide very different services.
 
-## Validation
+I also used the official NHS England published figures throughout the project to check that my calculations were producing sensible results.
 
-Calculated metrics were checked against published NHS England figures to confirm the transformations were correct.
+## Process and Decisions
 
-Key validated totals included:
+I started by inspecting the dataset, checking the number of rows and columns, reviewing the data types and looking for any issues that could affect the analysis.
 
-- **Total A&E attendances:** 2,487,580
-- **Overall four-hour performance:** 75.4%
-- **Type 1 four-hour performance:** 61.7%
-- **Emergency admissions:** 547,828
-- **12+ hour decision-to-admit waits:** 47,438
+The dataset originally contained 192 rows. I identified that one of these rows represented the national total rather than an individual provider, so I removed it from provider level comparisons.
 
-During validation, an initial attendance total was found to exclude booked A&E appointments. Investigating the discrepancy identified 76,165 booked appointments, which were then incorporated into the final calculation.
+From there, I created additional measures including:
+
+- Total A&E attendances
+- Total attendances over four hours
+- Four hour performance
+- Type 1 four hour performance
+- Emergency admissions through A&E
+- 12+ hour decision to admit delays
+- A derived 12+ hour delay rate
+
+When looking at provider performance, I focused specifically on Type 1 A&E departments. This was a deliberate choice because comparing all A&E department types together could give a misleading picture of performance.
+
+For the 12+ hour delay analysis, I also chose to calculate a rate rather than only comparing the raw number of delays. Larger hospitals naturally admit more patients, so using a rate gave more context when comparing providers of different sizes.
+
+I also wanted to test whether busier A&E departments automatically performed worse. Instead of assuming this was the case, I calculated the correlation between Type 1 attendance volume and four hour performance and then visualised the relationship using a scatter plot.
+
+## Iteration and Problem Solving
+
+One of the most useful parts of this project came from finding a mistake in my first calculation.
+
+My initial total for A&E attendances was lower than the official NHS England figure. Instead of continuing with the analysis, I went back through the dataset to work out why the numbers were different.
+
+I realised that I had included standard A&E attendances but had not included booked A&E appointments.
+
+The missing booked appointments accounted for 76,165 attendances.
+
+After adding these into the calculation, my total A&E attendance figure became 2,487,580, which matched the official NHS England figure.
+
+I then used the same validation approach for the other main metrics. My final calculations reproduced the published figures for:
+
+- Overall four hour performance at 75.4%
+- Type 1 four hour performance at 61.7%
+- Emergency admissions at 547,828
+- 12+ hour decision to admit waits at 47,438
+
+This part of the project made me realise how important validation is. A calculation can run successfully in Python and still be wrong if the underlying logic is incomplete.
 
 ## Key Findings
 
-### Four-Hour Performance
+The analysis showed a large difference in performance between NHS providers.
 
-No reporting Type 1 provider achieved the 95% four-hour operational standard during July 2026.
+University Hospitals Plymouth NHS Trust recorded the lowest Type 1 four hour performance in the dataset at approximately 37.1%.
 
-University Hospitals Plymouth NHS Trust recorded the lowest Type 1 performance in the analysis at approximately **37.1%**.
+Croydon Health Services NHS Trust recorded the highest derived 12+ hour decision to admit delay rate at approximately 58.9%.
 
-### Decision-to-Admit Delays
+I also tested the relationship between Type 1 attendance volume and four hour performance.
 
-Croydon Health Services NHS Trust recorded the highest derived 12+ hour DTA delay rate at approximately **58.9%**.
+The correlation was approximately 0.055, which suggests there was almost no linear relationship between how many Type 1 patients a provider treated and its four hour performance during July 2026.
 
-This rate was calculated as the number of 12+ hour decision-to-admit waits relative to emergency admissions via A&E and is used here as a comparative analytical measure rather than an official NHS performance metric.
+This was interesting because it showed that higher demand alone did not explain why some providers performed significantly worse than others.
 
-### Demand vs Performance
+## Reflection
 
-The correlation between Type 1 attendance volume and four-hour performance was approximately **0.055**.
+If I developed this project further, the biggest improvement would be to move from a one month snapshot to a longer time period.
 
-This indicates very little linear relationship between provider attendance volume and four-hour performance in the July 2026 snapshot. Higher patient volumes alone therefore did not explain differences in provider performance.
+Using several months or years of data would allow me to analyse trends and identify whether poor performance was temporary or consistent.
 
-## Tableau Dashboard
+I would also like to include additional variables such as:
 
-The Tableau dashboard presents:
+- Bed occupancy
+- Staffing levels
+- Regional differences
+- Seasonal demand
+- Patient complexity
 
-- Total A&E attendance
-- Overall four-hour performance
-- Type 1 four-hour performance
-- 12+ hour decision-to-admit waits
-- Emergency admissions
-- Lowest-performing Type 1 providers
-- Highest derived 12+ hour DTA delay rates
-- Type 1 demand versus four-hour performance
+This would make it possible to investigate why performance differs between providers rather than only identifying where those differences exist.
 
-The packaged Tableau workbook is available here:
+I would also consider adding regional filters and trend charts to the Tableau dashboard so users could explore changes in performance over time.
 
-[Download the Tableau workbook](NHS%20A%26E%20performance%20dashboard.twbx)
-
-## Python Analysis
-
-The complete Python analysis and data preparation workflow can be viewed here:
-
-[View the Jupyter notebook](NHS_AE_July_2026.ipynb)
-
-## Data Source
-
-NHS England  
-A&E Attendances and Emergency Admissions  
-July 2026
-
-## Skills Demonstrated
-
-This project demonstrates practical experience in:
-
-- Healthcare data analysis
-- Data cleaning and validation
-- Pandas data manipulation
-- Feature engineering and calculated KPIs
-- Exploratory data analysis
-- Correlation analysis
-- Data visualisation
-- Tableau dashboard development
-- Communicating analytical findings
+Overall, this project helped me become more confident working through the full analytics process, from understanding and cleaning raw data to validating calculations, investigating patterns and presenting findings through Tableau.
